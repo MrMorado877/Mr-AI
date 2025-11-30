@@ -166,12 +166,13 @@ function addMessage(text,type,isCode=false){
   li.onclick=()=>{document.getElementById("userInput").value=text.replace(/```/g,""); sendChat();}
   historyList.appendChild(li);
 
-  // Speak if voice enabled
-  if(voiceEnabled && !isCode){
-    const utter=new SpeechSynthesisUtterance(text);
-    utter.lang="en-US";
+// Speak if voice enabled
+if(voiceEnabled && !isCode){
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "hi-IN";  // Hindi
     speechSynthesis.speak(utter);
-  }
+}
+
 }
 
 // Send chat
@@ -203,3 +204,4 @@ document.getElementById("userInput").addEventListener("keypress",e=>{if(e.key===
 </script>
 </body>
 </html>
+
