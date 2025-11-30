@@ -3,86 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Assistant Chat</title>
+<title>Adam AI Assistant</title>
 
   <meta name="google-site-verification" content="qLKwdVfAn0qgmnyOxefdD3EfWTbYMth60QPmLUJcww4" />
 
-<!-- SEO Meta Tags -->
-<meta name="description" content="AI Assistant ChatGPT style website. Ask questions, generate code, and interact with AI.">
-<meta name="keywords" content="AI, ChatGPT, AI assistant, code generator, chatbot, AI website">
+<!-- SEO -->
+<meta name="description" content="Adam AI Assistant ChatGPT style website. Speak and interact with AI.">
+<meta name="keywords" content="AI, ChatGPT, AI assistant, code generator, chatbot, Adam AI">
 <meta name="author" content="Your Name">
 <meta name="robots" content="index, follow">
 
-<!-- Google Analytics placeholder (replace YOUR_TRACKING_ID) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_TRACKING_ID"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'YOUR_TRACKING_ID');
-</script>
-
 <style>
-* {margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif;}
-body {background:#1c1c1c; color:#e0e0e0; overflow-x:hidden; display:flex; flex-direction:column; min-height:100vh; font-size:18px;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+body{background:#1c1c1c;color:#e0e0e0;display:flex;flex-direction:column;min-height:100vh;font-size:18px;}
 
 /* HEADER */
-header {
-  background:#2a2a2a; 
-  padding:20px; 
-  text-align:center; 
-  font-size:28px; 
-  position:relative; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center;
-}
-#logoBtn {
-  position:absolute;
-  left:15px; top:15px; 
-  width:50px; height:50px; 
-  cursor:pointer; border-radius:50%; 
-  background:#333; display:flex; align-items:center; justify-content:center;
-  font-weight:bold; font-size:20px; transition: all 0.3s;
-}
-#logoBtn:hover { background:#444; transform: scale(1.1) rotate(15deg); }
+header{background:#2a2a2a;padding:20px;text-align:center;font-size:28px;position:relative;display:flex;align-items:center;justify-content:center;}
+#logoBtn{position:absolute;left:15px;top:15px;width:50px;height:50px;cursor:pointer;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;transition:all 0.3s;}
+#logoBtn:hover{background:#444;transform:scale(1.1) rotate(15deg);}
 
 /* SIDEBAR */
-#sidebar{
-  height:100%; width:0; position:fixed; top:0; left:0; background:#2a2a2a;
-  overflow-x:hidden; transition:0.4s; padding-top:60px; box-shadow:2px 0 10px #111;
-}
-#sidebar h2{color:#e0e0e0;text-align:center;margin-bottom:20px; font-size:24px;}
+#sidebar{height:100%;width:0;position:fixed;top:0;left:0;background:#2a2a2a;overflow-x:hidden;transition:0.4s;padding-top:60px;box-shadow:2px 0 10px #111;}
+#sidebar h2{color:#e0e0e0;text-align:center;margin-bottom:20px;font-size:24px;}
 #sidebar ul{list-style:none;padding:0 15px;}
-#sidebar li{margin-bottom:12px;padding:10px;background:#333;border-radius:6px;cursor:pointer;color:#e0e0e0;transition:0.3s; font-size:18px;}
+#sidebar li{margin-bottom:12px;padding:10px;background:#333;border-radius:6px;cursor:pointer;color:#e0e0e0;transition:0.3s;font-size:18px;}
 #sidebar li:hover{background:#444;}
-#closeSidebar {position:absolute; top:15px; right:15px; background:#333; color:#e0e0e0; border:none; padding:6px 12px; cursor:pointer; border-radius:6px; transition:0.3s; font-size:16px;}
-#closeSidebar:hover{background:#444; transform: scale(1.05);}
+#closeSidebar{position:absolute;top:15px;right:15px;background:#333;color:#e0e0e0;border:none;padding:6px 12px;cursor:pointer;border-radius:6px;transition:0.3s;font-size:16px;}
+#closeSidebar:hover{background:#444;transform:scale(1.05);}
 
 /* CHAT BOX */
-#chatBox{flex:1; height:60vh; overflow-y:auto; padding:20px; background:#2a2a2a; margin-left:0; transition:margin-left 0.4s;}
-.message{padding:14px 18px; margin:12px 0; max-width:75%; border-radius:14px; word-wrap:break-word; background:#333; font-size:18px;}
+#chatBox{flex:1;height:60vh;overflow-y:auto;padding:20px;background:#2a2a2a;margin-left:0;transition:margin-left 0.4s;}
+.message{padding:14px 18px;margin:12px 0;max-width:75%;border-radius:14px;word-wrap:break-word;background:#333;font-size:18px;}
 .user{margin-left:auto;}
 .ai{margin-right:auto;}
 
+/* Loading animation */
+.loading{width:10px;height:10px;background:#0ff;border-radius:50%;display:inline-block;margin:0 3px;animation:blink 1s infinite;}
+@keyframes blink{0%,80%,100%{opacity:0.3;}40%{opacity:1;}}
+
 /* CODE BLOCK */
-.codeBlock{background:#333; color:#e0e0e0; padding:12px; border-radius:8px; font-family:monospace; position:relative; font-size:16px;}
+.codeBlock{background:#333;color:#e0e0e0;padding:12px;border-radius:8px;font-family:monospace;position:relative;font-size:16px;}
 .codeButtons{position:absolute;top:5px;right:5px;}
 .codeButtons button{margin-left:5px;padding:4px 8px;font-size:14px;border:none;border-radius:4px;cursor:pointer;background:#444;color:#e0e0e0;}
 
 /* INPUT AREA */
-.bottom{display:flex; padding:12px; background:#2a2a2a; position:fixed; bottom:0; width:100%;}
-#userInput{flex:1;padding:18px;border-radius:25px;border:none;background:#333;color:#e0e0e0; font-size:18px;}
+.bottom{display:flex;padding:12px;background:#2a2a2a;position:fixed;bottom:0;width:100%;align-items:center;}
+#voiceBtn{width:50px;height:50px;margin-right:10px;border-radius:50%;border:none;background:#0ff;color:#000;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
+#voiceBtn.active{box-shadow:0 0 15px #0ff; animation:glow 1.5s infinite;}
+@keyframes glow{0%{box-shadow:0 0 5px #0ff}50%{box-shadow:0 0 25px #0ff}100%{box-shadow:0 0 5px #0ff}}
+#userInput{flex:1;padding:18px;border-radius:25px;border:none;background:#333;color:#e0e0e0;font-size:18px;}
 #sendBtn{width:55px;height:55px;margin-left:10px;border-radius:50%;border:none;background:#333;color:#e0e0e0;font-size:24px;cursor:pointer;transition: transform 0.3s, box-shadow 0.3s;}
-#sendBtn:hover{transform: scale(1.2); box-shadow: 0 0 15px #555;}
+#sendBtn:hover{transform:scale(1.2);box-shadow:0 0 15px #555;}
 
-/* VOICE TOGGLE BUTTON */
-#voiceToggle{
-  position:fixed; bottom:90px; right:20px; width:120px; height:45px; border-radius:25px; background:#333; color:#e0e0e0;
-  font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px #444; transition: all 0.3s;
-}
-#voiceToggle.on{background:#0ff; color:#000;}
-#voiceToggle:hover{transform: scale(1.05); box-shadow:0 0 20px #555;}
+/* Adam blue circle */
+#adamCircle{position:fixed;bottom:120px;left:20px;width:80px;height:80px;background:#0ff;border-radius:50%;display:none;align-items:center;justify-content:center;color:#000;font-weight:bold;font-size:20px;box-shadow:0 0 15px #0ff;}
 </style>
 </head>
 <body>
@@ -101,17 +75,18 @@ header {
 <div id="chatBox"></div>
 
 <div class="bottom">
+  <button id="voiceBtn" title="Activate Adam">🎤</button>
   <input id="userInput" placeholder="What are you going to make today?">
   <button id="sendBtn">⬆</button>
 </div>
 
-<!-- Voice toggle -->
-<div id="voiceToggle" class="off">Voice: Off</div>
+<div id="adamCircle">Adam</div>
 
 <script>
 const BACKEND = "http://localhost:5000";
 let chatHistory = [];
 let voiceEnabled = false;
+let recognizing = false;
 
 // Sidebar toggle
 const sidebar = document.getElementById("sidebar");
@@ -121,58 +96,81 @@ const closeSidebar = document.getElementById("closeSidebar");
 logoBtn.onclick = () => { sidebar.style.width = "250px"; chatBox.style.marginLeft = "250px"; };
 closeSidebar.onclick = () => { sidebar.style.width = "0"; chatBox.style.marginLeft = "0"; };
 
-// Voice toggle
-const voiceToggle = document.getElementById("voiceToggle");
-voiceToggle.onclick = () => {
-  voiceEnabled = !voiceEnabled;
-  voiceToggle.className = voiceEnabled ? "on" : "off";
-  voiceToggle.innerText = voiceEnabled ? "Voice: On" : "Voice: Off";
+// Adam mic toggle
+const voiceBtn = document.getElementById("voiceBtn");
+const adamCircle = document.getElementById("adamCircle");
+
+voiceBtn.onclick = () => {
+  recognizing = !recognizing;
+  voiceBtn.classList.toggle("active", recognizing);
+  adamCircle.style.display = recognizing ? "flex" : "none";
+  if(recognizing) startRecognition();
 };
+
+// Speech recognition
+let recognition;
+if(window.SpeechRecognition || window.webkitSpeechRecognition){
+  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "hi-IN"; // Hindi
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = (e)=>{
+    const msg = e.results[0][0].transcript;
+    document.getElementById("userInput").value = msg;
+    sendChat();
+  };
+  recognition.onend = ()=>{ if(recognizing) recognition.start(); };
+}
 
 // Add message
 function addMessage(text,type,isCode=false){
-  const div=document.createElement("div");
-  div.className=`message ${type}`;
+  const div = document.createElement("div");
+  div.className = `message ${type}`;
 
   if(isCode || text.includes("```")){
     const codeContent = text.replace(/```/g,"");
     const codeDiv = document.createElement("div");
-    codeDiv.className="codeBlock";
+    codeDiv.className = "codeBlock";
     codeDiv.innerText = codeContent;
 
     const btnDiv = document.createElement("div");
     btnDiv.className="codeButtons";
-    const copyBtn = document.createElement("button");
+    const copyBtn=document.createElement("button");
     copyBtn.innerText="Copy";
-    copyBtn.onclick=()=>{navigator.clipboard.writeText(codeContent);}
-    const editBtn = document.createElement("button");
+    copyBtn.onclick = ()=>{navigator.clipboard.writeText(codeContent);}
+    const editBtn=document.createElement("button");
     editBtn.innerText="Edit";
-    editBtn.onclick=()=>{document.getElementById("userInput").value = codeContent; document.getElementById("userInput").focus();}
+    editBtn.onclick = ()=>{document.getElementById("userInput").value=codeContent; document.getElementById("userInput").focus();}
     btnDiv.appendChild(copyBtn);
     btnDiv.appendChild(editBtn);
     codeDiv.appendChild(btnDiv);
-
     div.appendChild(codeDiv);
   } else {
-    div.innerText=text;
+    // typing animation
+    const span = document.createElement("span");
+    let i=0;
+    div.appendChild(span);
+    const interval = setInterval(()=>{
+      span.innerText += text[i];
+      i++;
+      if(i>=text.length){clearInterval(interval);}
+    },30);
+    if(recognizing){
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "hi-IN";
+      speechSynthesis.speak(utter);
+    }
   }
 
   chatBox.appendChild(div);
-  chatBox.scrollTop=chatBox.scrollHeight;
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-  const historyList=document.getElementById("historyList");
-  const li=document.createElement("li");
-  li.innerText=(type==="user"?"You: ":"AI: ") + text.replace(/```/g,"");
-  li.onclick=()=>{document.getElementById("userInput").value=text.replace(/```/g,""); sendChat();}
+  const historyList = document.getElementById("historyList");
+  const li = document.createElement("li");
+  li.innerText = (type==="user"?"You: ":"Adam: ") + text.replace(/```/g,"");
+  li.onclick = ()=>{document.getElementById("userInput").value=text.replace(/```/g,""); sendChat();}
   historyList.appendChild(li);
-
-// Speak if voice enabled
-if(voiceEnabled && !isCode){
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "hi-IN";  // Hindi
-    speechSynthesis.speak(utter);
-}
-
 }
 
 // Send chat
@@ -185,23 +183,30 @@ async function sendChat(){
   input.value="";
 
   try{
-    const res=await fetch(BACKEND+"/api/chat",{
+    const res = await fetch(BACKEND+"/api/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({message:msg})
     });
-    const data=await res.json();
-    let reply = data.reply || "Sorry, I couldn't respond.";
+    const data = await res.json();
+    let reply = data.reply || "मुझे समझ नहीं आया।";
     const isCode = reply.includes("```");
     addMessage(reply,"ai",isCode);
     chatHistory.push({type:"ai",text:reply});
   }catch(e){console.error(e);}
 }
 
+// Start recognition
+function startRecognition(){
+  if(recognition && recognizing){
+    recognition.start();
+  }
+}
+
 // Send button & Enter key
 document.getElementById("sendBtn").onclick=sendChat;
 document.getElementById("userInput").addEventListener("keypress",e=>{if(e.key==="Enter") sendChat();});
+
 </script>
 </body>
 </html>
-
