@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap:https://mrmorado877.github.io/Mr-AI/morado-ai.xml
