@@ -1,160 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MORADO AI</title>
+
 <style>
 :root{
   --bg:#0f0f0f;
-  --panel:#171717;
-  --panel-2:#1f1f1f;
-  --text:#eaeaea;
-  --muted:#9ca3af;
-  --accent:#10a37f;
+  --panel:#1a1a1a;
+  --border:#2a2a2a;
+  --text:#e5e5e5;
+  --muted:#9a9a9a;
 }
+
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui,-apple-system,BlinkMacSystemFont;
   background:var(--bg);
   color:var(--text);
-  height:100vh;
   display:flex;
+  height:100vh;
 }
 
-/* SIDEBAR */
+/* ---------- SIDEBAR ---------- */
 #sidebar{
   width:260px;
   background:var(--panel);
-  padding:14px;
+  border-right:1px solid var(--border);
+  padding:16px;
   display:flex;
   flex-direction:column;
 }
+
 #brand{
-  font-size:18px;
+  font-size:20px;
   font-weight:600;
-  margin-bottom:16px;
+  margin-bottom:20px;
 }
+
 .sidebar-btn{
-  padding:10px 12px;
+  padding:10px;
   border-radius:8px;
   cursor:pointer;
+  background:none;
+  border:1px solid var(--border);
   color:var(--text);
+  text-align:left;
+  margin-bottom:10px;
 }
-.sidebar-btn:hover{background:#262626}
+
+.sidebar-btn:hover{
+  background:#222;
+}
+
 #history{
-  margin-top:20px;
-  color:var(--muted);
-  font-size:14px;
+  flex:1;
+  overflow-y:auto;
 }
-#history div{
+
+.history-item{
   padding:8px;
   border-radius:6px;
   cursor:pointer;
+  color:var(--muted);
 }
-#history div:hover{background:#262626}
 
-/* MAIN */
+.history-item:hover{
+  background:#222;
+  color:var(--text);
+}
+
+/* ---------- MAIN ---------- */
 #main{
   flex:1;
   display:flex;
   flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  position:relative;
 }
 
 #topbar{
-  position:absolute;
-  top:12px;
-  left:20px;
-  right:20px;
+  height:56px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
-}
-#model{
-  background:var(--panel-2);
-  padding:6px 10px;
-  border-radius:8px;
-  font-size:14px;
+  padding:0 16px;
+  border-bottom:1px solid var(--border);
 }
 
-#centerText{
-  font-size:28px;
-  margin-bottom:28px;
+#menu{
+  display:none;
+  font-size:20px;
+  cursor:pointer;
+  margin-right:10px;
+}
+
+#chat{
+  flex:1;
+  overflow-y:auto;
+  padding:40px 16px;
+  max-width:800px;
+  margin:auto;
+  width:100%;
+}
+
+.message{
+  margin-bottom:20px;
+  line-height:1.6;
+}
+
+.user{color:#fff}
+.ai{color:#dcdcdc}
+
+/* ---------- INPUT ---------- */
+#inputBar{
+  border-top:1px solid var(--border);
+  padding:16px;
 }
 
 #inputWrap{
-  width:100%;
-  max-width:720px;
-  background:var(--panel-2);
-  border-radius:28px;
-  padding:10px 16px;
+  max-width:800px;
+  margin:auto;
   display:flex;
-  align-items:center;
+  gap:10px;
 }
-#inputWrap input{
+
+#prompt{
   flex:1;
-  background:transparent;
-  border:none;
-  outline:none;
-  color:var(--text);
-  font-size:16px;
+  padding:14px;
+  border-radius:10px;
+  background:#1f1f1f;
+  border:1px solid var(--border);
+  color:white;
 }
+
 #send{
-  background:transparent;
+  padding:0 20px;
+  border-radius:10px;
   border:none;
-  color:var(--text);
-  font-size:20px;
   cursor:pointer;
 }
 
-/* MOBILE */
-#menuBtn{
+/* ---------- SETTINGS ---------- */
+#settings{
+  position:fixed;
+  top:60px;
+  right:20px;
+  width:260px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
   display:none;
 }
+
+.setting{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+/* ---------- MOBILE ---------- */
 @media(max-width:768px){
-  #sidebar{position:fixed;left:-260px;top:0;bottom:0;transition:.3s}
+  #sidebar{
+    position:fixed;
+    left:-260px;
+    top:0;
+    bottom:0;
+    z-index:10;
+    transition:.3s;
+  }
   #sidebar.open{left:0}
-  #menuBtn{display:block}
+  #menu{display:block}
 }
 </style>
 </head>
+
 <body>
 
+<!-- SIDEBAR -->
 <div id="sidebar">
   <div id="brand">MORADO AI</div>
-  <div class="sidebar-btn">New chat</div>
-  <div id="history">
-    <div>Weather in Bihar</div>
-    <div>Fix site responsiveness</div>
+  <button class="sidebar-btn" onclick="newChat()">New Chat</button>
+  <input id="search" placeholder="Search chats" style="padding:8px;border-radius:6px;background:#111;border:1px solid var(--border);color:white">
+  <div id="history"></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <span id="menu">☰</span>
+    <span>MORADO AI</span>
+    <button style="margin-left:auto" onclick="toggleSettings()">⚙️</button>
+  </div>
+
+  <div id="chat">
+    <h2 style="text-align:center;color:var(--muted)">What’s on your mind today?</h2>
+  </div>
+
+  <div id="inputBar">
+    <div id="inputWrap">
+      <input id="prompt" placeholder="Ask anything">
+      <button id="send">Send</button>
+    </div>
   </div>
 </div>
 
-<div id="main">
-  <div id="topbar">
-    <button id="menuBtn" class="sidebar-btn">☰</button>
-    <div id="model">MORADO‑GPT</div>
+<!-- SETTINGS -->
+<div id="settings">
+  <div class="setting">
+    <span>Voice</span><input type="checkbox" id="voiceToggle">
   </div>
-
-  <div id="centerText">What’s on your mind today?</div>
-
-  <div id="inputWrap">
-    <input id="userInput" placeholder="Ask anything" />
-    <button id="send">➤</button>
+  <div class="setting">
+    <span>History</span><input type="checkbox" id="historyToggle" checked>
+  </div>
+  <div class="setting">
+    <span>Model</span>
+    <select id="model">
+      <option value="morado-1">MORADO-1</option>
+      <option value="morado-pro">MORADO-PRO</option>
+    </select>
   </div>
 </div>
 
 <script>
+/* ---------- BACKEND ---------- */
 const BACKEND = "https://backend-k99w.onrender.com";
 
-const menuBtn = document.getElementById('menuBtn');
-const sidebar = document.getElementById('sidebar');
+/* ---------- STATE ---------- */
+let chats = JSON.parse(localStorage.getItem("chats")||"[]");
+let currentModel = "morado-1";
 
-menuBtn.onclick = ()=> sidebar.classList.toggle('open');
+/* ---------- UI ---------- */
+const chatBox = document.getElementById("chat");
+const historyBox = document.getElementById("history");
 
+/* ---------- FUNCTIONS ---------- */
+function renderHistory(){
+  historyBox.innerHTML="";
+  chats.forEach((c,i)=>{
+    const div=document.createElement("div");
+    div.className="history-item";
+    div.textContent=c.title;
+    div.onclick=()=>loadChat(i);
+    historyBox.appendChild(div);
+  });
+}
+
+function newChat(){
+  chatBox.innerHTML="";
+}
+
+function loadChat(i){
+  chatBox.innerHTML="";
+  chats[i].messages.forEach(m=>{
+    addMessage(m.text,m.role,false);
+  });
+}
+
+function addMessage(text,role,save=true){
+  const div=document.createElement("div");
+  div.className="message "+role;
+  div.textContent=text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop=chatBox.scrollHeight;
+
+  if(save){
+    if(!chats.length || chats[chats.length-1].done){
+      chats.push({title:text.slice(0,30),messages:[],done:false});
+    }
+    chats[chats.length-1].messages.push({role,text});
+    localStorage.setItem("chats",JSON.stringify(chats));
+    renderHistory();
+  }
+}
+
+async function send(){
+  const input=document.getElementById("prompt");
+  const msg=input.value.trim();
+  if(!msg) return;
+  input.value="";
+  addMessage(msg,"user");
+
+  const res = await fetch(BACKEND+"/api/chat",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({message:msg,model:currentModel})
+  });
+
+  const data = await res.json();
+  addMessage(data.reply || "No response","ai");
+}
+
+/* ---------- SETTINGS ---------- */
+function toggleSettings(){
+  const s=document.getElementById("settings");
+  s.style.display = s.style.display==="block"?"none":"block";
+}
+
+document.getElementById("model").onchange=e=>{
+  currentModel=e.target.value;
+};
+
+/* ---------- EVENTS ---------- */
+document.getElementById("send").onclick=send;
+document.getElementById("prompt").onkeydown=e=>{if(e.key==="Enter")send()};
+document.getElementById("menu").onclick=()=>document.getElementById("sidebar").classList.toggle("open");
+document.getElementById("search").oninput=e=>{
+  const v=e.target.value.toLowerCase();
+  document.querySelectorAll(".history-item").forEach(i=>{
+    i.style.display=i.textContent.toLowerCase().includes(v)?"block":"none";
+  });
+};
+
+renderHistory();
 </script>
+
 </body>
 </html>
