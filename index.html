@@ -9,63 +9,55 @@
 
 <style>
 :root{
-  --bg:#0f0f0f;
-  --sidebar:#151515;
-  --panel:#1f1f1f;
-  --border:#2a2a2a;
-  --text:#ececec;
+  --bg:#121212;
+  --panel:#1b1b1b;
+  --panel2:#202020;
+  --text:#eaeaea;
   --muted:#9a9a9a;
-  --accent:#10a37f;
+  --accent:#19c37d;
 }
 *{box-sizing:border-box;font-family:Inter}
 
 body{
   margin:0;
-  height:100vh;
-  display:flex;
   background:var(--bg);
   color:var(--text);
+  display:flex;
+  height:100vh;
   overflow:hidden;
 }
 
 /* SIDEBAR */
 #sidebar{
-  width:220px;
-  background:var(--sidebar);
-  border-right:1px solid var(--border);
+  width:210px;
+  background:var(--panel);
+  padding:12px;
   display:flex;
   flex-direction:column;
 }
-#sidebar h1{
-  font-size:16px;
-  padding:14px;
-  margin:0;
-}
-#newChat{
-  margin:0 10px 10px;
+.sidebar-btn{
+  background:var(--panel2);
+  color:var(--text);
+  border:none;
   padding:9px;
-  background:none;
-  border:1px solid var(--border);
-  color:white;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
 }
 #history{
   flex:1;
-  overflow:auto;
-  padding:6px;
+  overflow-y:auto;
+  margin-top:8px;
 }
 .history-item{
-  padding:8px;
   font-size:13px;
-  color:var(--muted);
+  padding:7px;
   border-radius:6px;
+  background:#222;
   cursor:pointer;
-}
-.history-item.active,
-.history-item:hover{
-  background:var(--panel);
-  color:white;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-bottom:6px;
 }
 
 /* MAIN */
@@ -73,237 +65,146 @@ body{
   flex:1;
   display:flex;
   flex-direction:column;
+  align-items:center;
 }
 #topbar{
-  height:50px;
-  border-bottom:1px solid var(--border);
+  width:100%;
+  padding:14px 18px;
   display:flex;
-  align-items:center;
   justify-content:center;
-  position:relative;
+  border-bottom:1px solid #222;
 }
-#menu{
-  position:absolute;
-  left:14px;
-  font-size:20px;
-  cursor:pointer;
-  display:none;
-}
+#menu{display:none}
 
 /* CHAT */
-#messages{
+#chat{
   flex:1;
-  overflow:auto;
-  padding:22px;
+  width:100%;
+  max-width:820px;
+  padding:24px 18px;
+  overflow-y:auto;
 }
 .msg{
-  max-width:760px;
-  margin-bottom:14px;
-  line-height:1.6;
+  max-width:80%;
+  margin-bottom:16px;
+  line-height:1.55;
 }
 .user{
   margin-left:auto;
-  background:#1f1f1f;
+  background:#2a2a2a;
   padding:12px;
-  border-radius:12px 12px 0 12px;
+  border-radius:12px 12px 4px 12px;
 }
 .ai{
-  background:#161616;
-  border:1px solid var(--border);
-  padding:12px;
-  border-radius:12px 12px 12px 0;
+  background:#1f1f1f;
+  padding:14px;
+  border-radius:12px 12px 12px 4px;
 }
 
 /* INPUT */
 #inputBar{
-  border-top:1px solid var(--border);
-  padding:12px;
+  width:100%;
+  max-width:820px;
+  padding:14px 18px 18px;
 }
 #inputWrap{
-  max-width:760px;
-  margin:auto;
   display:flex;
-  gap:8px;
   background:#1f1f1f;
-  border-radius:14px;
+  border-radius:12px;
   padding:10px;
+  gap:10px;
 }
 #input{
   flex:1;
   background:none;
   border:none;
-  color:white;
+  color:var(--text);
   font-size:15px;
   outline:none;
 }
 #send{
   background:var(--accent);
   border:none;
-  color:black;
-  width:36px;
-  height:36px;
-  border-radius:10px;
-  font-size:18px;
+  color:#000;
+  border-radius:8px;
+  padding:0 14px;
   cursor:pointer;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-  #sidebar{
-    position:fixed;
-    left:-220px;
-    top:0;
-    height:100%;
-    z-index:10;
-    transition:.3s;
-  }
-  #sidebar.show{left:0}
-  #menu{display:block}
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
 <div id="sidebar">
-  <h1>NEXORA</h1>
-  <button id="newChat">➕ New chat</button>
+  <button class="sidebar-btn" onclick="newChat()">➕ New Chat</button>
   <div id="history"></div>
 </div>
 
+<!-- MAIN -->
 <div id="main">
   <div id="topbar">
-    <span id="menu">☰</span>
     <strong>NEXORA</strong>
   </div>
 
-  <div id="messages"></div>
+  <div id="chat">
+    <h2 style="text-align:center;color:var(--muted)">What’s on your mind?</h2>
+  </div>
 
   <div id="inputBar">
     <div id="inputWrap">
-      <input id="input" placeholder="Ask NEXORA…">
-      <button id="send">➤</button>
+      <input id="input" placeholder="Ask anything…">
+      <button id="send" onclick="send()">Send</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const BACKEND = "https://backend-b80q.onrender.com/api/chat";
+const BACKEND = "https://backend-b80q.onrender.com";
 
-/* ================= ELEMENTS ================= */
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
+const chat = document.getElementById("chat");
 const historyDiv = document.getElementById("history");
-const sidebar = document.getElementById("sidebar");
+const input = document.getElementById("input");
 
-/* ================= STATE ================= */
-let chats = JSON.parse(localStorage.getItem("nexora_chats")) || [];
-let current = -1;
-
-/* ================= INIT ================= */
-if(chats.length === 0){
-  createNewChat();
-}else{
-  current = chats.length - 1;
+function newChat(){
+  chat.innerHTML =
+    '<h2 style="text-align:center;color:#777">What’s on your mind?</h2>';
 }
-render();
 
-/* ================= EVENTS ================= */
-document.getElementById("menu").onclick =
-  () => sidebar.classList.toggle("show");
-
-document.getElementById("newChat").onclick = createNewChat;
-document.getElementById("send").onclick = send;
-
-input.addEventListener("keydown", e=>{
-  if(e.key === "Enter"){
-    e.preventDefault();
-    send();
-  }
-});
-
-/* ================= LOGIC ================= */
-function createNewChat(){
-  chats.push({
-    title: "New chat",
-    messages: []
-  });
-  current = chats.length - 1;
-  save();
-  render();
+function addMsg(text,type){
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
 async function send(){
-  const text = input.value.trim();
-  if(!text) return;
-
+  const msg = input.value.trim();
+  if(!msg) return;
   input.value = "";
 
-  const chat = chats[current];
+  addMsg(msg,"user");
 
-  chat.messages.push({ role:"user", text });
-
-  if(chat.title === "New chat"){
-    chat.title = text.slice(0, 50) + (text.length > 50 ? "…" : "");
-  }
-
-  render();
+  const h = document.createElement("div");
+  h.className="history-item";
+  h.textContent = msg.length > 40 ? msg.slice(0,40)+"…" : msg;
+  historyDiv.prepend(h);
 
   try{
-    const res = await fetch(BACKEND,{
+    const res = await fetch(BACKEND + "/api/chat",{
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ message: text })
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:msg})
     });
 
     const data = await res.json();
+    addMsg(data.reply || "No reply","ai");
 
-    chat.messages.push({
-      role:"ai",
-      text: data.reply || "No reply"
-    });
-
-    save();
-    render();
-
-  }catch(err){
-    chat.messages.push({
-      role:"ai",
-      text:"❌ Connection error"
-    });
-    render();
+  }catch(e){
+    addMsg("Connection error","ai");
   }
-}
-
-/* ================= RENDER ================= */
-function render(){
-  messages.innerHTML = "";
-  historyDiv.innerHTML = "";
-
-  chats.forEach((c,i)=>{
-    const h = document.createElement("div");
-    h.className = "history-item" + (i === current ? " active" : "");
-    h.textContent = c.title;
-    h.onclick = () => {
-      current = i;
-      render();
-    };
-    historyDiv.appendChild(h);
-  });
-
-  chats[current].messages.forEach(m=>{
-    const d = document.createElement("div");
-    d.className = "msg " + m.role;
-    d.textContent = m.text;
-    messages.appendChild(d);
-  });
-
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function save(){
-  localStorage.setItem("nexora_chats", JSON.stringify(chats));
 }
 </script>
 
