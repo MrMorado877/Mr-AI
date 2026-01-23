@@ -1,263 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0f0f0f;
-  --glass: rgba(0,0,0,0.55);
-  --text: #fff;
-  --accent: #6C63FF;
-  --border: rgba(255,255,255,0.2);
-  --input-bg: #1a1a1a;
-  --bot-bg: #252525;
-  --user-bg: #3b3b3b;
-  --sidebar-bg: #111;
-}
-
-/* BODY */
-body { margin:0; font-family: 'Inter', sans-serif; display:flex; height:100vh; background: var(--bg); color: var(--text); }
-.wrapper { display:flex; flex:1; height:100%; }
-
-/* SIDEBAR */
-.sidebar { width: 220px; background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding: 20px; border-right: 1px solid var(--border); transition: width 0.3s ease; }
-.sidebar.collapsed { width: 60px; }
-.sidebar img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; transition: opacity 0.3s; }
-.sidebar.collapsed img { opacity:0; }
-.sidebar p { font-size: 14px; text-align: center; margin: 0; transition: opacity 0.3s; }
-.sidebar.collapsed p { opacity:0; }
-.sidebar button { background: var(--accent); border: none; color: #fff; padding: 10px; width: 100%; margin-top: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s, opacity 0.3s; }
-.sidebar.collapsed button { width: 50px; padding: 10px 0; font-size: 0; opacity:0.7; }
-.sidebar button:hover { background: #574bff; }
-#collapseBtn { margin-top: 20px; background: var(--accent); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: transform 0.3s; }
-#collapseBtn:hover { background:#574bff; }
-.sidebar.collapsed #collapseBtn { transform: rotate(180deg); }
-
-/* CHAT TITLES */
-.chat-titles { width:100%; margin-top: 20px; display:flex; flex-direction:column; gap:8px; overflow-y:auto; max-height:300px; }
-.chat-titles button { background:#1a1a1a; border:none; color:#fff; padding:8px; text-align:left; border-radius:6px; cursor:pointer; transition:0.2s; }
-.chat-titles button:hover { background: #333; }
-
-/* MAIN CHAT AREA */
-.main { flex:1; display:flex; flex-direction: column; position: relative; }
-
-/* CHAT AREA */
-#chatArea { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction: column; gap:12px; }
-
-/* QUOTE */
-.quote { text-align:center; margin-top:20px; font-size:18px; opacity:0.7; transition: opacity 0.5s ease; }
-
-/* MESSAGES */
-.message-box { padding:12px 18px; border-radius:12px; max-width:70%; word-wrap: break-word; animation: fadeIn 0.3s ease; }
-.user-msg { background: var(--user-bg); align-self:flex-end; }
-.bot-msg { background: var(--bot-bg); align-self:flex-start; position:relative; white-space: pre-line; }
-
-/* SEARCH BAR */
-.search-wrapper { position: sticky; bottom: 0; background: var(--bg); padding:15px 20px; display:flex; justify-content:center; border-top:1px solid var(--border); }
-.search-bar { width:80%; padding:15px 20px; border-radius:30px; background: var(--input-bg); color: var(--text); border:1px solid var(--border); outline:none; font-size:16px; }
-.search-bar:focus { border:1px solid var(--accent); box-shadow:0 0 10px var(--accent); }
-
-/* SETTINGS */
-#settingsBox { display:none; position:fixed; top:100px; right:20px; background: var(--glass); backdrop-filter:blur(15px); padding:20px; border-radius:15px; width:250px; border:1px solid var(--border); box-shadow:0 5px 15px rgba(0,0,0,0.5); z-index:99; }
-#settingsBox h3 { color: var(--accent); margin-top:0; }
-#settingsBox select, #settingsBox button { width:100%; margin-top:10px; padding:8px; border-radius:6px; border:none; cursor:pointer; }
-#settingsBox button { background: var(--accent); color:#fff; transition:0.2s; }
-#settingsBox button:hover { background:#574bff; }
-
-/* ANIMATIONS */
-@keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  .wrapper{flex-direction:column;}
-  .sidebar{width:100%; flex-direction:row; justify-content:space-between; padding:10px;}
-  .chat-titles{flex-direction:row; overflow-x:auto; max-height:50px;}
-  .main{flex:1;}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora AI Chat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #121212;
+      color: #eee;
+    }
+    /* Sidebar */
+    #sidebar {
+      width: 280px;
+      background-color: #1f1f1f;
+      padding: 10px;
+      overflow-y: auto;
+      border-right: 1px solid #333;
+    }
+    #sidebar h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .chat-item {
+      background-color: #2a2a2a;
+      padding: 8px;
+      margin-bottom: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .chat-item:hover {
+      background-color: #3a3a3a;
+    }
+    /* Chat area */
+    #chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #121212;
+    }
+    #chat-header {
+      padding: 10px;
+      background-color: #1f1f1f;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #chat-window {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .message {
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .user {
+      color: #00ffea;
+    }
+    .bot {
+      color: #ffd700;
+    }
+    #input-container {
+      display: flex;
+      padding: 10px;
+      background-color: #1f1f1f;
+      border-top: 1px solid #333;
+    }
+    #message-input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background-color: #2a2a2a;
+      color: #eee;
+    }
+    #send-btn {
+      margin-left: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: #00ffea;
+      color: #000;
+      cursor: pointer;
+    }
+    #send-btn:hover {
+      background-color: #00c4b3;
+    }
+    /* Logout */
+    #logout-btn {
+      cursor: pointer;
+      background-color: #ff4c4c;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+    #logout-btn:hover {
+      background-color: #e03b3b;
+    }
+    @media (max-width: 768px) {
+      #sidebar {
+        width: 100px;
+        font-size: 12px;
+      }
+      #chat-header {
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="wrapper">
 
-<!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-  <img id="profilePic" src="" alt="Profile Picture">
-  <p id="userEmail">User Email</p>
-  <button onclick="openSettings()">Settings</button>
-  <button onclick="logout()">Logout</button>
-  <div class="chat-titles" id="chatTitles"></div>
-  <div id="collapseBtn" onclick="toggleSidebar()">⮜</div>
-</div>
-
-<!-- MAIN CHAT AREA -->
-<div class="main">
-  <div class="quote">"IF YOU CAME HERE THEN YOU WILL DO SOMETHING"</div>
-  <div id="chatArea"></div>
-  <div class="search-wrapper">
-    <input id="input" class="search-bar" placeholder="Ask Nexora...">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h2>Chats</h2>
+    <div id="chat-list"></div>
   </div>
-</div>
 
-<!-- SETTINGS -->
-<div id="settingsBox">
-  <h3>Settings</h3>
-  <label>Language:</label>
-  <select id="lang">
-    <option value="English">English</option>
-    <option value="Hindi">Hindi</option>
-    <option value="Spanish">Spanish</option>
-  </select>
-  <button onclick="closeSettings()">Close</button>
-</div>
-</div>
+  <!-- Chat Area -->
+  <div id="chat-container">
+    <div id="chat-header">
+      <span>Nexora AI</span>
+      <span id="logout-btn">Logout</span>
+    </div>
+    <div id="chat-window"></div>
+    <div id="input-container">
+      <input type="text" id="message-input" placeholder="Type a message..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
 
-<script>
-const backend = "https://backend-b80q.onrender.com";
+  <script>
+    const backendURL = "https://backend-b80q.onrender.com";
+    const email = localStorage.getItem("userEmail") || "user@example.com"; // mock user
 
-// Profile
-document.getElementById("profilePic").src = localStorage.getItem("userPic") || "https://via.placeholder.com/60";
-document.getElementById("userEmail").innerText = localStorage.getItem("userEmail") || "user@example.com";
+    const chatList = document.getElementById("chat-list");
+    const chatWindow = document.getElementById("chat-window");
+    const messageInput = document.getElementById("message-input");
+    const sendBtn = document.getElementById("send-btn");
+    const logoutBtn = document.getElementById("logout-btn");
 
-// Sidebar collapse
-const sidebar = document.getElementById("sidebar");
-function toggleSidebar(){ sidebar.classList.toggle("collapsed"); }
-
-// Settings
-function openSettings(){ document.getElementById("settingsBox").style.display="block"; }
-function closeSettings(){ document.getElementById("settingsBox").style.display="none"; }
-
-// Logout
-function logout(){ localStorage.clear(); window.location.href="login.html"; }
-
-// Language
-const lang = document.getElementById("lang");
-lang.value = localStorage.getItem("lang") || "English";
-lang.onchange = () => localStorage.setItem("lang", lang.value);
-
-// Chat
-const input = document.getElementById("input");
-const chatArea = document.getElementById("chatArea");
-const quote = document.querySelector(".quote");
-const chatTitles = document.getElementById("chatTitles");
-
-// Load chat titles
-async function loadChatTitles(){
-  try{
-    const res = await fetch(`${backend}/api/chat/titles`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("userEmail")})
-    });
-    const data = await res.json();
-    chatTitles.innerHTML="";
-    data.titles?.forEach(t=>{
-      const btn = document.createElement("button");
-      btn.innerText = t.title;
-      btn.onclick = ()=> loadChatHistory(t.id);
-      btn.oncontextmenu = (e)=> openChatOptions(e,t.id);
-      chatTitles.appendChild(btn);
+    // Logout
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("userEmail");
+      window.location.href = "login.html";
     });
 
-    // Auto-load latest chat
-    if(data.titles?.length>0){
-      loadChatHistory(data.titles[0].id);
+    // Fetch chat history
+    async function loadChats() {
+      try {
+        const res = await fetch(`${backendURL}/api/history`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        chatList.innerHTML = "";
+        data.history.forEach(chat => {
+          const div = document.createElement("div");
+          div.className = "chat-item";
+          div.textContent = chat.content.slice(0, 30) + "...";
+          div.onclick = () => loadChatMessages(chat.id);
+          chatList.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Error loading chats:", err);
+      }
     }
-  }catch(err){ console.error(err); }
-}
 
-// Load chat history
-async function loadChatHistory(chatId){
-  try{
-    const res = await fetch(`${backend}/api/chat/history`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("userEmail"), chatId})
-    });
-    const data = await res.json();
-    chatArea.innerHTML="";
-    data.history.forEach(msg=>{
+    // Load messages of a single chat
+    async function loadChatMessages(chatId) {
+      try {
+        const res = await fetch(`${backendURL}/api/history`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, chatId })
+        });
+        const data = await res.json();
+        chatWindow.innerHTML = "";
+        data.history.forEach(msg => {
+          const div = document.createElement("div");
+          div.className = `message ${msg.sender}`;
+          div.innerHTML = msg.content.replace(/\n/g, "<br>");
+          chatWindow.appendChild(div);
+        });
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      } catch (err) {
+        console.error("Error loading messages:", err);
+      }
+    }
+
+    // Send message
+    async function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message) return;
+      appendMessage("user", message);
+      messageInput.value = "";
+      try {
+        const res = await fetch(`${backendURL}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, message, language: "English" })
+        });
+        const data = await res.json();
+        appendMessage("bot", data.reply);
+        loadChats(); // update sidebar
+      } catch (err) {
+        appendMessage("bot", "Server error! Please try again later.");
+        console.error("Send message error:", err);
+      }
+    }
+
+    // Append message to chat window
+    function appendMessage(sender, content) {
       const div = document.createElement("div");
-      div.className="message-box "+(msg.sender==="user"?"user-msg":"bot-msg");
-      div.innerHTML = msg.content.replace(/\n/g,"<br>");
-      chatArea.appendChild(div);
+      div.className = `message ${sender}`;
+      div.innerHTML = content.replace(/\n/g, "<br>");
+      chatWindow.appendChild(div);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Event listeners
+    sendBtn.addEventListener("click", sendMessage);
+    messageInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
     });
-    chatArea.scrollTop = chatArea.scrollHeight;
-    quote.style.opacity="0";
-  }catch(err){ console.error(err); }
-}
 
-// Send new message
-input.addEventListener("keypress", async (e)=>{
-  if(e.key==="Enter"){
-    const msg = input.value.trim();
-    if(!msg) return;
-    input.value="";
-    quote.style.opacity="0";
+    // Load initial
+    loadChats();
+  </script>
 
-    const userMsg = document.createElement("div");
-    userMsg.className="message-box user-msg";
-    userMsg.innerText = msg;
-    chatArea.appendChild(userMsg);
-
-    const botMsg = document.createElement("div");
-    botMsg.className="message-box bot-msg";
-    botMsg.innerText = "Typing...";
-    chatArea.appendChild(botMsg);
-    chatArea.scrollTop = chatArea.scrollHeight;
-
-    try{
-      const res = await fetch(`${backend}/api/chat`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({
-          message: msg,
-          language: localStorage.getItem("lang"),
-          email: localStorage.getItem("userEmail")
-        })
-      });
-      const data = await res.json();
-      botMsg.innerHTML = data.reply.replace(/\n/g,"<br>");
-      chatArea.scrollTop = chatArea.scrollHeight;
-      loadChatTitles(); // reload sidebar
-    }catch(err){ console.error(err); botMsg.innerText="Server error ❌"; }
-  }
-});
-
-// Chat options (rename/delete/share)
-function openChatOptions(e, chatId){
-  e.preventDefault();
-  const menu = document.createElement("div");
-  menu.style.position="absolute";
-  menu.style.top=e.clientY+"px";
-  menu.style.left=e.clientX+"px";
-  menu.style.background="#222";
-  menu.style.padding="10px";
-  menu.style.borderRadius="8px";
-  menu.style.zIndex=999;
-  menu.innerHTML = `
-    <button onclick="renameChat('${chatId}')">Rename</button>
-    <button onclick="deleteChat('${chatId}')">Delete</button>
-    <button onclick="shareChat('${chatId}')">Share</button>
-  `;
-  document.body.appendChild(menu);
-  document.addEventListener("click",()=>menu.remove(),{once:true});
-}
-function renameChat(chatId){ 
-  const newTitle = prompt("Enter new chat title"); 
-  if(newTitle) fetch(`${backend}/api/chat/rename`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chatId,newTitle})}).then(loadChatTitles); 
-}
-function deleteChat(chatId){ 
-  if(confirm("Delete this chat?")) fetch(`${backend}/api/chat/delete`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chatId})}).then(()=>{loadChatTitles(); chatArea.innerHTML=""; quote.style.opacity="1";}); 
-}
-function shareChat(chatId){ 
-  const url = `${window.location.origin}?chatId=${chatId}`; 
-  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`,"_blank"); 
-}
-
-loadChatTitles();
-</script>
 </body>
 </html>
