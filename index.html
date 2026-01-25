@@ -3,148 +3,222 @@
 <head>
 <meta charset="UTF-8">
 <title>Nexora AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
+body{
   margin:0;
-  font-family: Arial, sans-serif;
   background:#0b0b0b;
-  color:white;
+  color:#ffffff;
+  font-family:Segoe UI, Arial;
+  display:flex;
+  height:100vh;
 }
 
-.top {
+/* Sidebar */
+#sidebar{
+  width:260px;
+  background:#111;
+  border-right:1px solid #222;
+  padding:10px;
+  overflow-y:auto;
+}
+.chatBlock{
+  background:#1a1a1a;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.chatBlock:hover{
+  background:#222;
+}
+
+/* Main */
+#main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Header */
+#header{
+  height:60px;
+  background:#111;
   display:flex;
   align-items:center;
-  padding:10px;
-  background:#111;
+  justify-content:space-between;
+  padding:0 15px;
   border-bottom:1px solid #222;
 }
-
-.top img {
+#profilePic{
   width:40px;
   height:40px;
   border-radius:50%;
-  margin-right:10px;
-}
-
-.logout {
-  margin-left:auto;
-  background:red;
-  color:white;
-  border:none;
-  padding:8px 14px;
   cursor:pointer;
 }
 
-.chat {
-  height:75vh;
+/* Dropdown */
+#menu{
+  position:absolute;
+  top:60px;
+  right:15px;
+  background:#111;
+  border:1px solid #333;
+  border-radius:8px;
+  display:none;
+  padding:10px;
+}
+#menu button{
+  width:100%;
+  margin-top:8px;
+  background:#222;
+  color:white;
+  border:none;
+  padding:8px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* Chat */
+#chat{
+  flex:1;
+  padding:20px;
   overflow-y:auto;
-  padding:15px;
 }
-
-.msg {
+.msg{
   margin-bottom:15px;
+  padding:12px;
+  border-radius:10px;
+  max-width:70%;
 }
+.user{background:#1f1f1f;margin-left:auto;}
+.ai{background:#2a2a2a;}
 
-.user { color:#00aaff; }
-.ai { color:#00ff99; }
-
-.input-box {
+/* Input */
+#inputBar{
   display:flex;
   padding:10px;
   background:#111;
+  border-top:1px solid #222;
 }
-
-input {
+#msgInput{
   flex:1;
-  padding:10px;
+  padding:12px;
+  background:#1a1a1a;
   border:none;
-  outline:none;
-  background:#222;
   color:white;
+  border-radius:8px;
+}
+#sendBtn{
+  margin-left:10px;
+  padding:12px 20px;
+  background:#ffffff;
+  color:black;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
 
-button {
-  padding:10px 15px;
-  border:none;
-  background:#00ff99;
-  cursor:pointer;
+/* Loader */
+#loader{
+  display:none;
+  margin:10px;
+  color:#aaa;
 }
 </style>
 </head>
 
 <body>
 
-<div class="top">
-  <img id="pic">
-  <div>
-    <div id="name"></div>
-    <small id="email"></small>
-  </div>
-  <button class="logout" onclick="logout()">Logout</button>
+<!-- Sidebar -->
+<div id="sidebar">
+  <h3>Chats</h3>
+  <div id="chatList"></div>
 </div>
 
-<div class="chat" id="chat"></div>
+<!-- Main -->
+<div id="main">
 
-<div class="input-box">
-  <input id="msg" placeholder="Ask Nexora AI...">
-  <button onclick="send()">Send</button>
+<div id="header">
+  <h3>Nexora AI</h3>
+  <img id="profilePic">
+</div>
+
+<div id="menu">
+  <div id="userInfo"></div>
+  <button onclick="showCookies()">View Cookies</button>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<div id="chat"></div>
+<div id="loader">Nexora is thinking…</div>
+
+<div id="inputBar">
+  <input id="msgInput" placeholder="Ask Nexora...">
+  <button id="sendBtn" onclick="send()">Send</button>
+</div>
+
 </div>
 
 <script>
 const API = "https://backend-b80q.onrender.com";
 
-// 🔐 Check login
 const email = localStorage.getItem("userEmail");
 const name = localStorage.getItem("userName");
 const pic = localStorage.getItem("userPic");
 
-if (!email) {
-  window.location.href = "login.html";
+if(!email){
+  window.location.href="login.html";
 }
 
-document.getElementById("name").innerText = name;
-document.getElementById("email").innerText = email;
-document.getElementById("pic").src = pic;
+profilePic.src = pic;
+userInfo.innerHTML = `<b>${name}</b><br>${email}`;
 
-function logout() {
+profilePic.onclick = () =>{
+  menu.style.display = menu.style.display=="block"?"none":"block";
+}
+
+function showCookies(){
+  alert(document.cookie || "No cookies stored");
+}
+
+function logout(){
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href="login.html";
 }
 
-function add(sender, text) {
-  const div = document.createElement("div");
-  div.className = "msg " + sender;
-  div.innerText = (sender === "user" ? "You: " : "Nexora: ") + text;
-  document.getElementById("chat").appendChild(div);
-  div.scrollIntoView();
-}
+/* Load Chat History */
+fetch(API+"/chats/"+email)
+.then(r=>r.json())
+.then(data=>{
+  data.forEach(c=>{
+    const div=document.createElement("div");
+    div.className="chatBlock";
+    div.innerText=c.user;
+    chatList.appendChild(div);
+  })
+});
 
-async function send() {
-  const input = document.getElementById("msg");
-  const text = input.value.trim();
-  if (!text) return;
+/* Send Message */
+function send(){
+  const msg = msgInput.value;
+  if(!msg) return;
 
-  add("user", text);
-  input.value = "";
+  chat.innerHTML += `<div class="msg user">${msg}</div>`;
+  msgInput.value="";
+  loader.style.display="block";
 
-  try {
-    const res = await fetch(API + "/chat", {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({
-        email: email,
-        message: text
-      })
-    });
-
-    const data = await res.json();
-    add("ai", data.reply);
-
-  } catch (e) {
-    add("ai", "Server not reachable");
-  }
+  fetch(API+"/chat",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({email,message:msg})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    loader.style.display="none";
+    chat.innerHTML += `<div class="msg ai">${d.reply}</div>`;
+  });
 }
 </script>
 
